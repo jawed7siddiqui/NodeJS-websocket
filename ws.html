@@ -1,0 +1,48 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<h1>
+    Trading live -- open console to see data
+</h1>
+
+<form id="form" action="">
+    <input id="input" autocomplete="off" /><button>Share</button>
+  </form>
+
+<ul id="messages"></ul>
+
+<script>
+    var ws = new WebSocket('ws://localhost:40510');
+    
+
+    ws.onopen = function () {
+        console.log('websocket is connected ...')
+        ws.send('connected');
+
+        form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+        //   socket.emit('chat message', input.value);
+        ws.send(input.value);
+
+          input.value = '';
+        }
+      });
+    }
+
+    ws.onclose = function () {
+        console.log('websocket is closed ...')
+        ws.send('close')
+    }
+
+    ws.onerror = function () {
+        console.log('websocket is error ...')
+        ws.send('error')
+    }
+
+    ws.onmessage = function (serverData) {
+        console.log(serverData);
+    //    var msg = JSON.parse(serverData);
+        $('#messages').append($('<li>').text(serverData.data));
+        
+    }
+</script>
